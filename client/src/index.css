@@ -1,0 +1,39 @@
+@import "tailwindcss";
+* {
+  font-family: "Times New Roman", Times, serif;
+}
+/* .cl-footer,
+.cl-internal-b3fm6y,
+[data-localization-key="devMode"] {
+  display: none !important;
+} */
+/* .cl-footer {
+  display: none !important;
+}
+
+.cl-footerAction {
+  display: block !important;
+}
+
+.cl-internal-b3fm6y,
+[data-localization-key="devMode"] {
+  display: none !important;
+} */
+.cl-footer {
+  display: none !important;
+}
+
+.cl-footerAction,
+.cl-footerActionLink,
+.cl-footerActionText,
+[data-localization-key="signIn.start.actionLink"],
+[data-localization-key="signUp.start.actionLink"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.cl-internal-b3fm6y,
+[data-localization-key="devMode"] {
+  display: none !important;
+}
