@@ -50,8 +50,8 @@ export default function Footer() {
               ["Latest News", "/news"],
               ["Downloads Center", "/downloads"],
               ["Photo Gallery", "/gallery"],
-            ].map(([label, path]) => (
-              <li key={label}>
+            ].map(([label, path], index) => (
+              <li key={`${label}-${index}`}>
                 <Link to={path} className="hover:text-white transition">{label}</Link>
               </li>
             ))}
@@ -67,8 +67,8 @@ export default function Footer() {
               ["Parent Portal", "/login"],
               ["Staff Portal", "/login"],
               ["Admin Login", "/login"],
-            ].map(([label, path]) => (
-              <li key={label}>
+            ].map(([label, path], index) => (
+              <li key={`${label}-${index}`}>
                 <Link to={path} className="hover:text-white transition">{label}</Link>
               </li>
             ))}
