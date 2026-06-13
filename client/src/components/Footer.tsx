@@ -119,7 +119,7 @@ export default function Footer() {
       </div>
 
       {/* Bottom bar */}
-      <div style={{ borderColor: "rgba(255,255,255,0.1)" }} className="border-t mt-12 pt-6 text-center text-sm" style={{ color: "#6B7280" }}>
+      <div style={{ borderColor: "rgba(255,255,255,0.1)", color: "#6B7280" }} className="border-t mt-12 pt-6 text-center text-sm">
         © {new Date().getFullYear()} Elizabethan Academy. All rights reserved.
       </div>
     </footer>
