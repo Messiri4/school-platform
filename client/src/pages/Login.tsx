@@ -53,14 +53,14 @@ export default function Login() {
             alt="Logo"
             style={{ width: "130px", height: "130px", objectFit: "contain" }}
             />
-            <div>
+            {/* <div>
             <p style={{ color: "#FFC107", fontWeight: "bold", fontSize: "36px", lineHeight: "1.2" }}>
                 Elizabethan
             </p>
             <p style={{ color: "#CBD5E1", fontSize: "16px", letterSpacing: "4px", textTransform: "uppercase" }}>
                 Academy
             </p>
-            </div>
+            </div> */}
         </div>
         <h1 style={{ color: "white", fontSize: "36px", fontWeight: "bold", lineHeight: "1.2", marginBottom: "16px" }}>
           Elizabethan Academy Portal
