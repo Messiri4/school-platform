@@ -11,6 +11,9 @@ import NurserySchool from "./pages/NurserySchool";
 import PrimarySchool from "./pages/PrimarySchool";
 import SecondarySchool from "./pages/SecondarySchool";
 import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+
+
 
 
 export default function App() {
@@ -19,6 +22,7 @@ export default function App() {
       <Routes>
          {/* Login — no navbar/footer */}
         <Route path="/login" element={<Login />} />
+        <Route path="/sign-up" element={<Signup />} />
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
