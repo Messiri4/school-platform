@@ -1,12 +1,11 @@
 import { useUser } from "@clerk/clerk-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { syncUser } from "../api/users";
 
 export default function Dashboard() {
   const { user, isLoaded } = useUser();
   const navigate = useNavigate();
-  
 
   useEffect(() => {
     if (!isLoaded || !user) return;
@@ -16,14 +15,12 @@ export default function Dashboard() {
         const email = user.emailAddresses[0]?.emailAddress || "";
         const name = user.fullName || "";
         const dbUser = await syncUser(user.id, name, email);
-
-        // Route based on role
         const role = dbUser.role?.toLowerCase() || "student";
         navigate(`/dashboard/${role}`);
       } catch (err) {
         console.error("Sync failed", err);
         navigate("/dashboard/student");
-      } 
+      }
     };
 
     sync();
@@ -38,7 +35,7 @@ export default function Dashboard() {
       fontFamily: "Times New Roman, serif",
       background: "#F8FAFC",
     }}>
-      <div className="text-center">
+      <div style={{ textAlign: "center" }}>
         <div style={{
           width: "48px",
           height: "48px",
