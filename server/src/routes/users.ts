@@ -37,7 +37,19 @@ router.post("/sync", async (req, res) => {
   }
 });
 
-// GET user by clerkId
+// GET all users — must be before /:clerkId
+router.get("/", async (req, res) => {
+  try {
+    const users = await prisma.user.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+});
+
+// GET user by clerkId — after GET /
 router.get("/:clerkId", async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
@@ -48,26 +60,12 @@ router.get("/:clerkId", async (req, res) => {
         staff: true,
       },
     });
-
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-
     res.json(user);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch user" });
-  }
-});
-
-// GET all users
-router.get("/", async (req, res) => {
-  try {
-    const users = await prisma.user.findMany({
-      orderBy: { createdAt: "desc" },
-    });
-    res.json(users);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch users" });
   }
 });
 
