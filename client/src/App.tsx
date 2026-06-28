@@ -12,6 +12,15 @@ import PrimarySchool from "./pages/PrimarySchool";
 import SecondarySchool from "./pages/SecondarySchool";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+
+import StudentDashboard from "./pages/student/StudentDashboard";
+import ParentDashboard from "./pages/parent/ParentDashboard";
+import StaffDashboard from "./pages/staff/StaffDashboard";
+
+// replace placeholders:
+
 
 
 
@@ -36,6 +45,12 @@ export default function App() {
           <Route path="/academics/primary" element={<PrimarySchool />} />
           <Route path="/academics/secondary" element={<SecondarySchool />} />
         </Route>
+        {/* Dashboard — protected, role-based */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard/student" element={<StudentDashboard />} />
+        <Route path="/dashboard/parent" element={<ParentDashboard />} />
+        <Route path="/dashboard/staff" element={<StaffDashboard />} />
+        <Route path="/dashboard/admin" element={<AdminDashboard />} />
       </Routes>
     </BrowserRouter>
   );

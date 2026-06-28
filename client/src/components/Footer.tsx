@@ -63,10 +63,10 @@ export default function Footer() {
           <h4 style={{ color: "#FFF" }} className="font-bold mb-5 text-sm uppercase tracking-widest">Portals & Access</h4>
           <ul className="space-y-3 text-sm" style={{ color: "#CBD5E1" }}>
             {[
-              ["Student Portal", "/login"],
-              ["Parent Portal", "/login"],
-              ["Staff Portal", "/login"],
-              ["Admin Login", "/login"],
+              ["Student Portal", "/login?portal=student"],
+              ["Parent Portal", "/login?portal=parent"],
+              ["Staff Portal", "/login?portal=staff"],
+              ["Admin Login", "/login?portal=admin"],
             ].map(([label, path], index) => (
               <li key={`${label}-${index}`}>
                 <Link to={path} className="hover:text-white transition">{label}</Link>

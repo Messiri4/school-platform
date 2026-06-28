@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { createAdmission } from "../api/index";
 
 export default function Admissions() {
   const [form, setForm] = useState({
@@ -12,9 +13,20 @@ export default function Admissions() {
   });
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  try {
+    await createAdmission({
+      parentName: form.parentName,
+      studentName: `${form.firstName} ${form.lastName}`,
+      email: form.email,
+      phone: form.phone,
+      applyingFor: form.applyingFor,
+    });
     setSubmitted(true);
+    } catch (error) {
+      console.error("Failed to submit admission", error);
+    }
   };
 
   return (

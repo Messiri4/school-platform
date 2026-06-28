@@ -35,7 +35,7 @@ export default function Navbar() {
         {/* Portal buttons */}
         <div className="flex gap-3">
           <Link
-            to="/login"
+            to="/login?portal=student"
             style={{ background: "#1E3A8A", border: "1px solid rgba(255,255,255,0.2)" }}
             className="flex items-center gap-2 px-4 py-1.5 rounded text-sm font-semibold hover:opacity-90 transition"
           >
@@ -46,7 +46,7 @@ export default function Navbar() {
             Student Portal
           </Link>
           <Link
-            to="/login"
+            to="/login?portal=parent"
             style={{ background: "#1E3A8A", border: "1px solid rgba(255,255,255,0.2)" }}
             className="flex items-center gap-2 px-4 py-1.5 rounded text-sm font-semibold hover:opacity-90 transition"
           >
