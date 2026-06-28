@@ -6,7 +6,7 @@ import { syncUser } from "../api/users";
 export default function Dashboard() {
   const { user, isLoaded } = useUser();
   const navigate = useNavigate();
-  const [syncing, setSyncing] = useState(true);
+  
 
   useEffect(() => {
     if (!isLoaded || !user) return;
@@ -23,9 +23,7 @@ export default function Dashboard() {
       } catch (err) {
         console.error("Sync failed", err);
         navigate("/dashboard/student");
-      } finally {
-        setSyncing(false);
-      }
+      } 
     };
 
     sync();
