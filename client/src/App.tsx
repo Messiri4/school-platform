@@ -19,7 +19,8 @@ import StudentDashboard from "./pages/student/StudentDashboard";
 import ParentDashboard from "./pages/parent/ParentDashboard";
 import StaffDashboard from "./pages/staff/StaffDashboard";
 
-// replace placeholders:
+import ProtectedRoute from "./components/ProtectedRoute";
+import RequireAuth from "./components/RequireAuth";
 
 
 
@@ -32,6 +33,37 @@ export default function App() {
          {/* Login — no navbar/footer */}
         <Route path="/login" element={<Login />} />
         <Route path="/sign-up" element={<Signup />} />
+
+        {/* Dashboard router — requires login */}
+        <Route path="/dashboard" element={
+          <RequireAuth>
+            <Dashboard />
+          </RequireAuth>
+        } />
+
+        {/* Protected portals — role based */}
+        <Route path="/dashboard/admin" element={
+          <ProtectedRoute allowedRole="admin">
+            <AdminDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/student" element={
+          <ProtectedRoute allowedRole="student">
+            <StudentDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/parent" element={
+          <ProtectedRoute allowedRole="parent">
+            <ParentDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/dashboard/staff" element={
+          <ProtectedRoute allowedRole="staff">
+            <StaffDashboard />
+          </ProtectedRoute>
+        } />
+
+        {/* Public routes — with navbar/footer */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
@@ -45,12 +77,6 @@ export default function App() {
           <Route path="/academics/primary" element={<PrimarySchool />} />
           <Route path="/academics/secondary" element={<SecondarySchool />} />
         </Route>
-        {/* Dashboard — protected, role-based */}
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/dashboard/student" element={<StudentDashboard />} />
-        <Route path="/dashboard/parent" element={<ParentDashboard />} />
-        <Route path="/dashboard/staff" element={<StaffDashboard />} />
-        <Route path="/dashboard/admin" element={<AdminDashboard />} />
       </Routes>
     </BrowserRouter>
   );
