@@ -66,7 +66,6 @@ export default function Footer() {
               ["Student Portal", "/login?portal=student"],
               ["Parent Portal", "/login?portal=parent"],
               ["Staff Portal", "/login?portal=staff"],
-              ["Admin Login", "/login?portal=admin"],
             ].map(([label, path], index) => (
               <li key={`${label}-${index}`}>
                 <Link to={path} className="hover:text-white transition">{label}</Link>

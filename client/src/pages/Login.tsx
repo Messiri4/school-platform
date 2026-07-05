@@ -14,10 +14,6 @@ const portalLabels: Record<string, { title: string; desc: string }> = {
     title: "Staff Portal",
     desc: "Manage classes, attendance, grades, and school administration.",
   },
-  admin: {
-    title: "Admin Portal",
-    desc: "Full access to school operations, users, finance, and settings.",
-  },
 };
 
 export default function Login() {

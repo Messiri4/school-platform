@@ -57,6 +57,17 @@ export default function Navbar() {
             </svg>
             Parent Portal
           </Link>
+          <Link
+            to="/login?portal=staff"
+            style={{ background: "#1E3A8A", border: "1px solid rgba(255,255,255,0.2)" }}
+            className="flex items-center gap-2 px-4 py-1.5 rounded text-sm font-semibold hover:opacity-90 transition"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+              <path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Staff Portal
+          </Link>
         </div>
       </div>
 
