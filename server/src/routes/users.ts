@@ -27,7 +27,7 @@ router.post("/sync", async (req, res) => {
         clerkId,
         name: name || "Unknown",
         email,
-        role: role || "STUDENT",
+        role: (role as any) || "STUDENT",
       },
     });
 

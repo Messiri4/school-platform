@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-type Section = "overview" | "announcements" | "admissions" | "students" | "staff" | "classes" | "fees";
+type Section = "overview" | "announcements" | "admissions" | "students" | "staff" | "classes" | "fees" | "pending";
 
 export default function AdminDashboard() {
   const { user } = useUser();
@@ -19,6 +19,7 @@ export default function AdminDashboard() {
   const [staff, setStaff] = useState<any[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
   const [fees, setFees] = useState<any[]>([]);
+  const [pendingUsers, setPendingUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Form state
@@ -34,20 +35,24 @@ export default function AdminDashboard() {
 
   const fetchAll = async () => {
     try {
-      const [a, adm, st, sf, cl, fe] = await Promise.all([
+      const [a, adm, st, sf, cl, fe, pu] = await Promise.all([
         fetch(`${API}/announcements`).then(r => r.json()),
         fetch(`${API}/admissions`).then(r => r.json()),
         fetch(`${API}/students`).then(r => r.json()),
         fetch(`${API}/staff`).then(r => r.json()),
         fetch(`${API}/classes`).then(r => r.json()),
         fetch(`${API}/fees`).then(r => r.json()),
+        fetch(`${API}/pending-users`).then(r => r.json()),
       ]);
+
       setAnnouncements(Array.isArray(a) ? a : []);
       setAdmissions(Array.isArray(adm) ? adm : []);
       setStudents(Array.isArray(st) ? st : []);
       setStaff(Array.isArray(sf) ? sf : []);
       setClasses(Array.isArray(cl) ? cl : []);
       setFees(Array.isArray(fe) ? fe : []);
+      setPendingUsers(Array.isArray(pu) ? pu : []);
+
     } catch (err) {
       console.error(err);
     } finally {
@@ -154,6 +159,25 @@ export default function AdminDashboard() {
     setFees(fees.map((f: any) => f.id === id ? { ...f, status } : f));
   };
 
+  const handleApprove = async (pendingUser: any, role: string) => {
+    // Create user in database
+    await fetch(`${API}/users/sync`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        clerkId: pendingUser.clerkId,
+        name: pendingUser.name,
+        email: pendingUser.email,
+        role: role.toUpperCase(),
+      }),
+    });
+    // Remove from pending
+    await fetch(`${API}/pending-users/${pendingUser.id}`, { method: "DELETE" });
+
+    // Update state
+    setPendingUsers(pendingUsers.filter((p: any) => p.id !== pendingUser.id));
+  };
+
   const navItems: { key: Section; label: string; icon: string }[] = [
     { key: "overview", label: "Overview", icon: "📊" },
     { key: "announcements", label: "Announcements", icon: "📢" },
@@ -162,6 +186,7 @@ export default function AdminDashboard() {
     { key: "staff", label: "Staff", icon: "👩‍🏫" },
     { key: "classes", label: "Classes", icon: "🏫" },
     { key: "fees", label: "Fees", icon: "💰" },
+    { key: "pending", label: "Pending Approvals", icon: "⏳" },
   ];
 
   const inputStyle = {
@@ -295,6 +320,7 @@ export default function AdminDashboard() {
                     { label: "Pending Admissions", value: admissions.filter((a: any) => a.status === "pending").length, icon: "📋", color: "#FFF1F2" },
                     { label: "Classes", value: classes.length, icon: "🏫", color: "#F5F3FF" },
                     { label: "Unpaid Fees", value: fees.filter((f: any) => f.status === "unpaid").length, icon: "💰", color: "#FFF7ED" },
+                    { label: "Pending Approvals", value: pendingUsers.length, icon: "⏳", color: "#FFF1F2" },
                   ].map((stat) => (
                     <div key={stat.label} style={{ background: stat.color, borderRadius: "12px", padding: "24px", border: "1px solid #CBD5E1" }}>
                       <div style={{ fontSize: "28px", marginBottom: "8px" }}>{stat.icon}</div>
@@ -595,6 +621,65 @@ export default function AdminDashboard() {
                 </div>
               </div>
             )}
+
+            {/* ── PENDING ── */}
+            {section === "pending" && (
+            <div>
+              <h1 style={{ color: "#1E3A8A", fontSize: "28px", fontWeight: "bold", marginBottom: "24px" }}>
+                Pending Approvals
+              </h1>
+              <div style={{ background: "white", borderRadius: "12px", border: "1px solid #CBD5E1", overflow: "hidden" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead style={{ background: "#F8FAFC" }}>
+                    <tr>
+                      {["Name", "Email", "Requested", "Approve As"].map(h => (
+                        <th key={h} style={{ padding: "12px 16px", textAlign: "left", color: "#1E3A8A", fontSize: "13px", fontWeight: "bold", borderBottom: "1px solid #CBD5E1" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pendingUsers.map((pu: any) => (
+                      <tr key={pu.id} style={{ borderBottom: "1px solid #F1F5F9" }}>
+                        <td style={{ padding: "12px 16px", fontSize: "14px", color: "#374151" }}>{pu.name}</td>
+                        <td style={{ padding: "12px 16px", fontSize: "14px", color: "#374151" }}>{pu.email}</td>
+                        <td style={{ padding: "12px 16px", fontSize: "14px", color: "#374151" }}>{new Date(pu.createdAt).toLocaleDateString()}</td>
+                        <td style={{ padding: "12px 16px" }}>
+                          <div className="flex gap-2 flex-wrap">
+                            {["student", "parent", "staff", "admin"].map((role) => (
+                              <button
+                                key={role}
+                                onClick={() => handleApprove(pu, role)}
+                                style={{
+                                  background: role === "admin" ? "#1E3A8A" : role === "staff" ? "#10B981" : role === "parent" ? "#F97316" : "#FFC107",
+                                  color: role === "admin" || role === "staff" ? "white" : "#1E3A8A",
+                                  border: "none",
+                                  borderRadius: "6px",
+                                  padding: "4px 10px",
+                                  cursor: "pointer",
+                                  fontSize: "12px",
+                                  fontWeight: "bold",
+                                  textTransform: "capitalize",
+                                }}
+                              >
+                                {role}
+                              </button>
+                            ))}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                    {pendingUsers.length === 0 && (
+                      <tr>
+                        <td colSpan={4} style={{ padding: "40px", textAlign: "center", color: "#6B7280" }}>
+                          No pending approvals
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
           </>
         )}
       </div>

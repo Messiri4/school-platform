@@ -1,9 +1,28 @@
-import { useClerk } from "@clerk/clerk-react";
+import { useClerk, useUser } from "@clerk/clerk-react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export default function Pending() {
   const { signOut } = useClerk();
+  const { user } = useUser();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) return;
+
+    // Save to pending list so admin can see them
+    fetch(`${API}/pending-users`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        clerkId: user.id,
+        name: user.fullName || "",
+        email: user.emailAddresses[0]?.emailAddress || "",
+      }),
+    }).catch(console.error);
+  }, [user]);
 
   return (
     <div style={{

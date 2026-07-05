@@ -131,3 +131,11 @@ model Fee {
   paidAt      DateTime?
   createdAt   DateTime @default(now())
 }
+
+model PendingUser {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  name      String
+  email     String
+  createdAt DateTime @default(now())
+}

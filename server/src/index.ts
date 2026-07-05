@@ -8,6 +8,7 @@ import studentRoutes from "./routes/students";
 import staffRoutes from "./routes/staff";
 import classRoutes from "./routes/classes";
 import feeRoutes from "./routes/fees";
+import pendingUserRoutes from "./routes/pendingUsers";
 
 
 
@@ -29,6 +30,7 @@ app.use("/api/students", studentRoutes);
 app.use("/api/staff", staffRoutes);
 app.use("/api/classes", classRoutes);
 app.use("/api/fees", feeRoutes);
+app.use("/api/pending-users", pendingUserRoutes);
 
 app.get("/", (req, res) => {
   res.send("School Platform API Running 🚀");
