@@ -19,9 +19,10 @@ import StudentDashboard from "./pages/student/StudentDashboard";
 import ParentDashboard from "./pages/parent/ParentDashboard";
 import StaffDashboard from "./pages/staff/StaffDashboard";
 
+import Pending from "./pages/Pending";
+
 import ProtectedRoute from "./components/ProtectedRoute";
 import RequireAuth from "./components/RequireAuth";
-
 
 
 
@@ -33,6 +34,7 @@ export default function App() {
          {/* Login — no navbar/footer */}
         <Route path="/login" element={<Login />} />
         <Route path="/sign-up" element={<Signup />} />
+        <Route path="/pending" element={<Pending />} />
 
         {/* Dashboard router — requires login */}
         <Route path="/dashboard" element={

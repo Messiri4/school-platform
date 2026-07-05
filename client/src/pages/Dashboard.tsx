@@ -1,7 +1,6 @@
 import { useUser } from "@clerk/clerk-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { syncUser } from "../api/users";
 
 export default function Dashboard() {
   const { user, isLoaded } = useUser();
@@ -10,20 +9,27 @@ export default function Dashboard() {
   useEffect(() => {
     if (!isLoaded || !user) return;
 
-    const sync = async () => {
+    const checkUser = async () => {
       try {
-        const email = user.emailAddresses[0]?.emailAddress || "";
-        const name = user.fullName || "";
-        const dbUser = await syncUser(user.id, name, email);
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/users/${user.id}`
+        );
+
+        if (res.status === 404) {
+          navigate("/pending");
+          return;
+        }
+
+        const dbUser = await res.json();
         const role = dbUser.role?.toLowerCase() || "student";
         navigate(`/dashboard/${role}`);
       } catch (err) {
-        console.error("Sync failed", err);
-        navigate("/dashboard/student");
+        console.error("Check failed", err);
+        navigate("/pending");
       }
     };
 
-    sync();
+    checkUser();
   }, [isLoaded, user]);
 
   return (
@@ -45,7 +51,9 @@ export default function Dashboard() {
           animation: "spin 1s linear infinite",
           margin: "0 auto 16px",
         }} />
-        <p style={{ color: "#1E3A8A", fontWeight: "bold" }}>Setting up your workspace...</p>
+        <p style={{ color: "#1E3A8A", fontWeight: "bold" }}>
+          Setting up your workspace...
+        </p>
       </div>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
