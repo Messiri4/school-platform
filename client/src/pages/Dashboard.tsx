@@ -1,6 +1,6 @@
 import { useUser } from "@clerk/clerk-react";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-input";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   const { user, isLoaded } = useUser();

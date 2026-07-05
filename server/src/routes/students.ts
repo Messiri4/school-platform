@@ -1,5 +1,10 @@
 import express from "express";
 import prisma from "../lib/prisma";
+import { createClerkClient } from "@clerk/backend";
+
+const clerk = createClerkClient({
+  secretKey: process.env.CLERK_SECRET_KEY,
+});
 
 const router = express.Router();
 
@@ -21,16 +26,25 @@ router.post("/", async (req, res) => {
   try {
     const { name, email, admissionNo, class: className, section } = req.body;
 
-    // Create Clerk user first then sync
+    // 1. Create user in Clerk
+    const clerkUser = await clerk.users.createUser({
+      emailAddress: [email],
+      firstName: name.split(" ")[0],
+      lastName: name.split(" ").slice(1).join(" ") || "",
+      skipPasswordRequirement: true,
+    });
+
+    // 2. Create user in your database
     const user = await prisma.user.create({
       data: {
-        clerkId: `manual_${Date.now()}`,
+        clerkId: clerkUser.id,
         name,
         email,
         role: "STUDENT",
       },
     });
 
+    // 3. Create student profile
     const student = await prisma.student.create({
       data: {
         userId: user.id,
@@ -42,18 +56,26 @@ router.post("/", async (req, res) => {
     });
 
     res.json(student);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to create student" });
+  } catch (error: any) {
+    console.error(error);
+    res.status(500).json({ error: error?.message || "Failed to create student" });
   }
 });
 
 // DELETE student
 router.delete("/:id", async (req, res) => {
   try {
-    const student = await prisma.student.delete({
+    const student = await prisma.student.findUnique({
       where: { id: req.params.id },
+      include: { user: true },
     });
-    res.json(student);
+
+    if (student?.user?.clerkId) {
+      await clerk.users.deleteUser(student.user.clerkId);
+    }
+
+    await prisma.student.delete({ where: { id: req.params.id } });
+    res.json({ message: "Deleted" });
   } catch (error) {
     res.status(500).json({ error: "Failed to delete student" });
   }
