@@ -47,7 +47,8 @@ export default function Pending() {
           Account Pending Approval
         </h1>
         <p style={{ color: "#6B7280", lineHeight: "1.7", marginBottom: "32px" }}>
-          Your account has not been registered in our system yet. Please contact the school admin to get access to your portal.
+          Your account has not been set up yet. Please contact the school admin — 
+          your login credentials will be provided once your account has been created.
         </p>
         <div style={{
           background: "#FFFDE7",

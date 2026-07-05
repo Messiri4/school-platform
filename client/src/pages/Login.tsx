@@ -1,5 +1,8 @@
 import { SignIn } from "@clerk/clerk-react";
 import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
+
+
 
 const portalLabels: Record<string, { title: string; desc: string }> = {
   student: {
@@ -21,6 +24,9 @@ export default function Login() {
   const params = new URLSearchParams(location.search);
   const portal = params.get("portal") || "student";
   const info = portalLabels[portal] || portalLabels["student"];
+  useEffect(() => {
+  sessionStorage.setItem("portal", portal);
+}, [portal]);
 
   return (
     <div style={{
@@ -118,12 +124,22 @@ export default function Login() {
             }}
           />
           {/* Manual sign up link */}
-        <p style={{ color: "#6B7280" }} className="text-sm text-center mt-4">
-        Don't have an account?{" "}
-        <a href="/sign-up" style={{ color: "#1E3A8A" }} className="font-bold hover:underline">
-            Sign up
-        </a>
-        </p>
+        {/* Only show sign up for parent portal */}
+        {portal === "parent" && (
+          <p style={{ color: "#6B7280" }} className="text-sm text-center mt-4">
+            Don't have an account?{" "}
+            <a href="/sign-up?portal=parent" style={{ color: "#1E3A8A" }} className="font-bold hover:underline">
+              Sign up
+            </a>
+          </p>
+        )}
+
+        {/* For staff and student — show message instead */}
+        {(portal === "staff" || portal === "student") && (
+          <p style={{ color: "#6B7280" }} className="text-sm text-center mt-4">
+            Your account will be created by the school admin.
+          </p>
+        )}
 
           {/* Portal switcher */}
           <div className="mt-4 pt-4" style={{ borderTop: "1px solid #CBD5E1" }}>
