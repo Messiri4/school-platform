@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { createClerkClient } from "@clerk/backend";
+import { createClerkClient, verifyToken } from "@clerk/backend";
+import prisma from "./prisma";
 
 const clerk = createClerkClient({
   secretKey: process.env.CLERK_SECRET_KEY,
@@ -16,7 +17,9 @@ export async function requireAuth(
       return res.status(401).json({ error: "Unauthorized" });
     }
 
-    const payload = await clerk.verifyToken(token);
+    const payload = await verifyToken(token, {
+      secretKey: process.env.CLERK_SECRET_KEY!,
+    });
     (req as any).userId = payload.sub;
     next();
   } catch {
@@ -38,5 +41,3 @@ export async function requireRole(role: string) {
     }
   };
 }
-
-import prisma from "./prisma";
