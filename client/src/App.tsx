@@ -24,7 +24,7 @@ import Pending from "./pages/Pending";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RequireAuth from "./components/RequireAuth";
 
-
+import AdminLogin from "./pages/AdminLogin";
 
 
 export default function App() {
@@ -35,6 +35,8 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/sign-up" element={<Signup />} />
         <Route path="/pending" element={<Pending />} />
+
+        <Route path="/ea-admin-access" element={<AdminLogin />} />
 
         {/* Dashboard router — requires login */}
         <Route path="/dashboard" element={
