@@ -16,10 +16,8 @@ export default function Dashboard() {
         );
 
         if (res.status === 404) {
-          // User not in DB — check if they came from parent portal
           const portal = sessionStorage.getItem("portal");
           if (portal === "parent") {
-            // Auto-create parent account
             await fetch(`${import.meta.env.VITE_API_URL}/users/sync`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -32,6 +30,15 @@ export default function Dashboard() {
             });
             navigate("/dashboard/parent");
           } else {
+            await fetch(`${import.meta.env.VITE_API_URL}/pending-users`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                clerkId: user.id,
+                name: user.fullName || "",
+                email: user.emailAddresses[0]?.emailAddress || "",
+              }),
+            });
             navigate("/pending");
           }
           return;
