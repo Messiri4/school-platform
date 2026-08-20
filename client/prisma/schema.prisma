@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+ 
+}
+
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  name      String
+  email     String   @unique
+  role      Role     @default(STUDENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student   Student?
+  parent    Parent?
+  staff     Staff?
+}
+
+enum Role {
+  ADMIN
+  STAFF
+  STUDENT
+  PARENT
+}
+
+model Student {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
+  admissionNo String   @unique
+  class       String
+  section     String?
+  createdAt   DateTime @default(now())
+
+  grades      Grade[]
+  attendance  Attendance[]
+  parent      Parent?      @relation(fields: [parentId], references: [id])
+  parentId    String?
+  fees        Fee[]
+}
+
+model Parent {
+  id        String    @id @default(cuid())
+  userId    String    @unique
+  user      User      @relation(fields: [userId], references: [id])
+  phone     String?
+  createdAt DateTime  @default(now())
+
+  children  Student[]
+}
+
+model Staff {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  subject   String?
+  phone     String?
+  createdAt DateTime @default(now())
+
+  classes   Class[]
+}
+
+model Class {
+  id        String   @id @default(cuid())
+  name      String
+  section   String?
+  staffId   String?
+  staff     Staff?   @relation(fields: [staffId], references: [id])
+  createdAt DateTime @default(now())
+
+  grades     Grade[]
+  attendance Attendance[]
+}
+
+model Grade {
+  id        String   @id @default(cuid())
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id])
+  classId   String
+  class     Class    @relation(fields: [classId], references: [id])
+  subject   String
+  score     Float
+  term      String
+  createdAt DateTime @default(now())
+}
+
+model Attendance {
+  id        String   @id @default(cuid())
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id])
+  classId   String
+  class     Class    @relation(fields: [classId], references: [id])
+  date      DateTime
+  status    String   // present, absent, late
+  createdAt DateTime @default(now())
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  imageUrl  String?
+  createdAt DateTime @default(now())
+}
+
+model Admission {
+  id          String   @id @default(cuid())
+  parentName  String
+  studentName String
+  email       String
+  phone       String?
+  applyingFor String?
+  message     String?
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+}
+
+model Fee {
+  id          String   @id @default(cuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id])
+  amount      Float
+  term        String
+  year        String
+  status      String   @default("unpaid")
+  paidAt      DateTime?
+  createdAt   DateTime @default(now())
+}
+
+model PendingUser {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  name      String
+  email     String
+  createdAt DateTime @default(now())
+}

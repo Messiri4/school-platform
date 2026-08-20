@@ -3,24 +3,22 @@ import prisma from './_db'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS')
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
 
   if (req.method === 'OPTIONS') return res.status(200).end()
 
   if (req.method === 'GET') {
-    const announcements = await prisma.announcement.findMany({
-      orderBy: { createdAt: 'desc' },
-    })
-    return res.json(announcements)
+    const admissions = await prisma.admission.findMany({ orderBy: { createdAt: 'desc' } })
+    return res.json(admissions)
   }
 
   if (req.method === 'POST') {
-    const { title, content, imageUrl } = req.body
-    const announcement = await prisma.announcement.create({
-      data: { title, content, imageUrl },
+    const { parentName, studentName, email, phone, applyingFor, message } = req.body
+    const admission = await prisma.admission.create({
+      data: { parentName, studentName, email, phone, applyingFor, message },
     })
-    return res.json(announcement)
+    return res.json(admission)
   }
 
   res.status(405).json({ error: 'Method not allowed' })
