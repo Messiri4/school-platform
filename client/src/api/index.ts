@@ -16,7 +16,7 @@ export const createAnnouncement = async (data: { title: string; content: string;
 };
 
 export const deleteAnnouncement = async (id: string) => {
-  const res = await fetch(`${API}/announcements/${id}`, {
+  const res = await fetch(`${API}/announcements?id=${id}`, {
     method: "DELETE",
   });
   return res.json();
@@ -24,12 +24,12 @@ export const deleteAnnouncement = async (id: string) => {
 
 // Admissions
 export const getAdmissions = async () => {
-  const res = await fetch(`${API}/admissions`);
+  const res = await fetch(`${API}/data?resource=admissions`);
   return res.json();
 };
 
 export const createAdmission = async (data: any) => {
-  const res = await fetch(`${API}/admissions`, {
+  const res = await fetch(`${API}/data?resource=admissions`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -38,7 +38,7 @@ export const createAdmission = async (data: any) => {
 };
 
 export const updateAdmissionStatus = async (id: string, status: string) => {
-  const res = await fetch(`${API}/admissions/${id}`, {
+  const res = await fetch(`${API}/data?resource=admissions&id=${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ status }),
@@ -53,7 +53,7 @@ export const getUsers = async () => {
 };
 
 export const syncUser = async (clerkId: string, name: string, email: string) => {
-  const res = await fetch(`${API}/users/sync`, {
+  const res = await fetch(`${API}/users?action=sync`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ clerkId, name, email }),

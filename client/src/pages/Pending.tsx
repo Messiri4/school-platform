@@ -13,7 +13,7 @@ export default function Pending() {
     if (!user) return;
 
     // Save to pending list so admin can see them
-    fetch(`${API}/pending-users`, {
+    fetch(`${API}/data?resource=pending-users`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

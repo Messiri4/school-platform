@@ -37,12 +37,12 @@ export default function AdminDashboard() {
     try {
       const [a, adm, st, sf, cl, fe, pu] = await Promise.all([
         fetch(`${API}/announcements`).then(r => r.json()),
-        fetch(`${API}/admissions`).then(r => r.json()),
-        fetch(`${API}/students`).then(r => r.json()),
-        fetch(`${API}/staff`).then(r => r.json()),
-        fetch(`${API}/classes`).then(r => r.json()),
-        fetch(`${API}/fees`).then(r => r.json()),
-        fetch(`${API}/pending-users`).then(r => r.json()),
+        fetch(`${API}/data?resource=admissions`).then(r => r.json()),
+        fetch(`${API}/data?resource=students`).then(r => r.json()),
+        fetch(`${API}/data?resource=staff`).then(r => r.json()),
+        fetch(`${API}/data?resource=classes`).then(r => r.json()),
+        fetch(`${API}/data?resource=fees`).then(r => r.json()),
+        fetch(`${API}/data?resource=pending-users`).then(r => r.json()),
       ]);
 
       setAnnouncements(Array.isArray(a) ? a : []);
@@ -74,12 +74,12 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteAnnouncement = async (id: string) => {
-    await fetch(`${API}/announcements/${id}`, { method: "DELETE" });
+    await fetch(`${API}/announcements?id=${id}`, { method: "DELETE" });
     setAnnouncements(announcements.filter((a: any) => a.id !== id));
   };
 
   const handleAdmissionStatus = async (id: string, status: string) => {
-    await fetch(`${API}/admissions/${id}`, {
+    await fetch(`${API}/data?resource=admissions&id=${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
 
   const handleCreateStudent = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch(`${API}/students`, {
+    const res = await fetch(`${API}/data?resource=students`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newStudent),
@@ -100,13 +100,13 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteStudent = async (id: string) => {
-    await fetch(`${API}/students/${id}`, { method: "DELETE" });
+    await fetch(`${API}/data?resource=students&id=${id}`, { method: "DELETE" });
     setStudents(students.filter((s: any) => s.id !== id));
   };
 
   const handleCreateStaff = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch(`${API}/staff`, {
+    const res = await fetch(`${API}/data?resource=staff`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newStaff),
@@ -117,13 +117,13 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteStaff = async (id: string) => {
-    await fetch(`${API}/staff/${id}`, { method: "DELETE" });
+    await fetch(`${API}/data?resource=staff&id=${id}`, { method: "DELETE" });
     setStaff(staff.filter((s: any) => s.id !== id));
   };
 
   const handleCreateClass = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch(`${API}/classes`, {
+    const res = await fetch(`${API}/data?resource=classes`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newClass),
@@ -134,13 +134,13 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteClass = async (id: string) => {
-    await fetch(`${API}/classes/${id}`, { method: "DELETE" });
+    await fetch(`${API}/data?resource=classes&id=${id}`, { method: "DELETE" });
     setClasses(classes.filter((c: any) => c.id !== id));
   };
 
   const handleCreateFee = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch(`${API}/fees`, {
+    const res = await fetch(`${API}/data?resource=fees`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...newFee, amount: parseFloat(newFee.amount) }),
@@ -151,7 +151,7 @@ export default function AdminDashboard() {
   };
 
   const handleFeeStatus = async (id: string, status: string) => {
-    await fetch(`${API}/fees/${id}`, {
+    await fetch(`${API}/data?resource=fees&id=${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
@@ -161,7 +161,7 @@ export default function AdminDashboard() {
 
   const handleApprove = async (pendingUser: any, role: string) => {
     // Create user in database
-    await fetch(`${API}/users/sync`, {
+    await fetch(`${API}/users?action=sync`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -172,7 +172,7 @@ export default function AdminDashboard() {
       }),
     });
     // Remove from pending
-    await fetch(`${API}/pending-users/${pendingUser.id}`, { method: "DELETE" });
+    await fetch(`${API}/data?resource=pending-users&id=${pendingUser.id}`, { method: "DELETE" });
 
     // Update state
     setPendingUsers(pendingUsers.filter((p: any) => p.id !== pendingUser.id));

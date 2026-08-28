@@ -19,7 +19,7 @@ export default function ProtectedRoute({ allowedRole, children }: Props) {
 
     const fetchRole = async () => {
       try {
-        const res = await fetch(`${API}/users/${user.id}`);
+        const res = await fetch(`${API}/users?clerkId=${user.id}`);
         const data = await res.json();
         setRole(data.role?.toLowerCase() || "student");
       } catch {
