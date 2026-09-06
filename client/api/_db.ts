@@ -1,10 +1,22 @@
 // @ts-ignore
-import { PrismaClient } from '@prisma/client'
-import { PrismaPg } from '@prisma/adapter-pg'
+import { PrismaClient } from "../generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+
+const databaseUrl = process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+  throw new Error(
+    "DATABASE_URL is missing. Add it to the environment used by Vercel."
+  );
+}
+// @ts-ignore
+const adapter = new PrismaPg({
+  connectionString: databaseUrl,
+});
 
 // @ts-ignore
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
-// @ts-ignore
-const prisma = new PrismaClient({ adapter })
+const prisma = new PrismaClient({
+  adapter,
+});
 
-export default prisma
+export default prisma;

@@ -12,13 +12,13 @@ export default function Dashboard() {
     const checkUser = async () => {
       try {
         const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/users/${user.id}`
+          `${import.meta.env.VITE_API_URL}/users?clerkId=${user.id}`
         );
 
         if (res.status === 404) {
           const portal = sessionStorage.getItem("portal");
           if (portal === "parent") {
-            await fetch(`${import.meta.env.VITE_API_URL}/users/sync`, {
+            await fetch(`${import.meta.env.VITE_API_URL}/users?action=sync`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -30,7 +30,7 @@ export default function Dashboard() {
             });
             navigate("/dashboard/parent");
           } else {
-            await fetch(`${import.meta.env.VITE_API_URL}/pending-users`, {
+            await fetch(`${import.meta.env.VITE_API_URL}/data?resource=pending-users`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -44,13 +44,23 @@ export default function Dashboard() {
           return;
         }
 
+        if (!res.ok) {
+          throw new Error("Unable to verify user");
+        }
+
         const dbUser = await res.json();
-        const role = dbUser.role?.toLowerCase() || "student";
+
+        if (!dbUser.role) {
+          throw new Error("User role missing");
+        }
+
+        const role = dbUser.role.toLowerCase();
         navigate(`/dashboard/${role}`);
-      } catch (err) {
-        console.error("Check failed", err);
-        navigate("/pending");
-      }
+
+        } catch (err) {
+          console.error("Check failed", err);
+          navigate("/pending");
+        }
     };
 
     checkUser();

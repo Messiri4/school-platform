@@ -13,6 +13,7 @@ export default function ProtectedRoute({ allowedRole, children }: Props) {
   const { user, isLoaded } = useUser();
   const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (!isLoaded || !user) return;
@@ -20,10 +21,21 @@ export default function ProtectedRoute({ allowedRole, children }: Props) {
     const fetchRole = async () => {
       try {
         const res = await fetch(`${API}/users?clerkId=${user.id}`);
+
+        if (!res.ok) {
+          throw new Error("Failed to verify user role");
+        }
+
         const data = await res.json();
-        setRole(data.role?.toLowerCase() || "student");
-      } catch {
-        setRole("student");
+
+        if (!data.role) {
+          throw new Error("User role not found");
+        }
+
+        setRole(data.role.toLowerCase());
+      } catch (err) {
+        console.error("Role verification failed:", err);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -31,6 +43,24 @@ export default function ProtectedRoute({ allowedRole, children }: Props) {
 
     fetchRole();
   }, [isLoaded, user]);
+
+  // Error fetching role
+  if (error) {
+  return (
+    <div style={{
+      minHeight: "100vh",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontFamily: "Times New Roman, serif",
+    }}>
+      <div style={{ textAlign: "center" }}>
+        <h2>Unable to verify account access</h2>
+        <p>Please try again or contact the administrator.</p>
+      </div>
+    </div>
+  );
+}
 
   // Not logged in — redirect to login
   if (isLoaded && !user) {

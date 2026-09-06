@@ -21,7 +21,7 @@ export default function AdminLogin() {
 
         <SignIn
           routing="hash"
-          forceRedirectUrl="/dashboard"
+          forceRedirectUrl="/dashboard/admin"
           appearance={{
             elements: {
               rootBox: "w-full",
