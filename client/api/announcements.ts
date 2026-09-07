@@ -1,5 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import prisma from "./_db";
+import { randomUUID } from "crypto";
+import pg from "pg";
+
+const { Pool } = pg;
 
 export default async function handler(
   req: VercelRequest,
@@ -16,19 +19,34 @@ export default async function handler(
     return res.status(200).end();
   }
 
+  const databaseUrl = process.env.DATABASE_URL;
+
+  if (!databaseUrl) {
+    return res.status(500).json({
+      error: "DATABASE_URL is missing",
+    });
+  }
+
+  const pool = new Pool({
+    connectionString: databaseUrl,
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  });
+
   try {
-    const { id } = req.query;
-
+    // GET all announcements
     if (req.method === "GET") {
-      const announcements = await prisma.announcement.findMany({
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
+      const result = await pool.query(`
+        SELECT *
+        FROM "Announcement"
+        ORDER BY "createdAt" DESC
+      `);
 
-      return res.status(200).json(announcements);
+      return res.status(200).json(result.rows);
     }
 
+    // CREATE announcement
     if (req.method === "POST") {
       const { title, content, imageUrl } = req.body;
 
@@ -38,23 +56,57 @@ export default async function handler(
         });
       }
 
-      const announcement = await prisma.announcement.create({
-        data: {
+      const announcementId = randomUUID();
+
+      const result = await pool.query(
+        `
+        INSERT INTO "Announcement"
+          (
+            "id",
+            "title",
+            "content",
+            "imageUrl",
+            "createdAt"
+          )
+        VALUES
+          ($1, $2, $3, $4, NOW())
+        RETURNING *
+        `,
+        [
+          announcementId,
           title,
           content,
-          imageUrl: imageUrl || null,
-        },
-      });
+          imageUrl || null,
+        ]
+      );
 
-      return res.status(201).json(announcement);
+      return res.status(201).json(result.rows[0]);
     }
 
-    if (req.method === "DELETE" && id) {
-      await prisma.announcement.delete({
-        where: {
-          id: id as string,
-        },
-      });
+    // DELETE announcement
+    if (req.method === "DELETE") {
+      const { id } = req.query;
+
+      if (!id || typeof id !== "string") {
+        return res.status(400).json({
+          error: "Announcement id is required",
+        });
+      }
+
+      const result = await pool.query(
+        `
+        DELETE FROM "Announcement"
+        WHERE "id" = $1
+        RETURNING *
+        `,
+        [id]
+      );
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          error: "Announcement not found",
+        });
+      }
 
       return res.status(200).json({
         message: "Deleted",
@@ -68,7 +120,12 @@ export default async function handler(
     console.error("Announcements API error:", error);
 
     return res.status(500).json({
-      error: "Failed to process announcements request",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Server error",
     });
+  } finally {
+    await pool.end();
   }
 }
